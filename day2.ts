@@ -39,14 +39,9 @@ class SubCommand {
   }
 }
 
-export class SubLocation {
-  x: number;
-  y: number;
-
-  constructor() {
-    this.x = 0;
-    this.y = 0;
-  }
+export class Sub2DLocation {
+  x = 0;
+  y = 0;
 
   applyCommand(command: SubCommand) {
     switch (command.type) {
@@ -58,6 +53,27 @@ export class SubLocation {
         break;
       case SubCommandType.forward:
         this.x += command.value;
+        break;
+    }
+  }
+}
+
+export class SubLocationWithAim {
+  x = 0;
+  y = 0;
+  aim = 0;
+
+  applyCommand(command: SubCommand) {
+    switch (command.type) {
+      case SubCommandType.up:
+        this.aim -= command.value;
+        break;
+      case SubCommandType.down:
+        this.aim += command.value;
+        break;
+      case SubCommandType.forward:
+        this.x += command.value;
+        this.y += this.aim * command.value;
         break;
     }
   }
