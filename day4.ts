@@ -24,10 +24,10 @@ class BingoBoard {
   }
 
   sumUnmarked() {
-    const sumMarked = this.marked.flat().filter(Number.isInteger).reduce(add)
-    const sumTotal = this.matrix.flat().filter(Number.isInteger).reduce(add)
+    const sumMarked = this.marked.flat().filter(Number.isInteger).reduce(add);
+    const sumTotal = this.matrix.flat().filter(Number.isInteger).reduce(add);
 
-    return sumTotal - sumMarked
+    return sumTotal - sumMarked;
   }
 
   isWinning() {
@@ -61,17 +61,19 @@ class BingoBoard {
   }
 }
 
-
 function parseTen(n: string) {
   return parseInt(n, 10);
 }
 
-function add(x: number, y: number) { return x+y}
+function add(x: number, y: number) {
+  return x + y;
+}
 
 class BingoGame {
   boards: BingoBoard[];
+  wonBoards: boolean[];
   numbers: number[];
-  playIndex = -1
+  playIndex = -1;
 
   static processRawInput(
     input: string,
@@ -93,9 +95,10 @@ class BingoGame {
   ) {
     this.numbers = numbers;
     this.boards = boards;
+    this.wonBoards = new Array(boards.length).fill(false);
   }
 
-  play(): BingoBoard | null {
+  playToFirstWin(): BingoBoard | null {
     while (this.playOneNumber()) {
       const winningBoard = this.getWinningBoard();
 
@@ -109,11 +112,35 @@ class BingoGame {
     return null;
   }
 
-  currentNumber() { return this.numbers[this.playIndex] }
+  playToLastWin(): BingoBoard | null {
+    while (this.playOneNumber()) {
+      let justWon = -1
+      this.boards.forEach((b, index) => {
+        if (b.isWinning() && this.wonBoards[index] === false) {
+          this.wonBoards[index] = true;
+          justWon = index;
+        }
+      });
+
+      
+
+      if (this.wonBoards.every((x) => x) && justWon > -1) {
+        return this.boards[justWon];
+      }
+    }
+
+    this.boards.forEach((x) => console.log(x));
+
+    return null;
+  }
+
+  currentNumber() {
+    return this.numbers[this.playIndex];
+  }
 
   private playOneNumber() {
-    this.playIndex += 1
-    const nextNumber = this.numbers[this.playIndex]
+    this.playIndex += 1;
+    const nextNumber = this.numbers[this.playIndex];
 
     if (Number.isInteger(nextNumber)) {
       this.boards.forEach((b) => b.playNumber(nextNumber as number));

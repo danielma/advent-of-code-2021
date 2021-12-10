@@ -33,18 +33,39 @@ Deno.test("parsing inputs", () => {
 Deno.test("play bingo", () => {
   const bingo = impl.processBingo(exampleInput);
 
-  const winningBoard = bingo.play();
+  const winningBoard = bingo.playToFirstWin();
 
   assertEquals(winningBoard!.sumUnmarked() * bingo.currentNumber(), 4512);
 });
 
-Deno.test('part 1, real input', () => {
-  const input = Deno.readTextFileSync('day4.input.txt')
+Deno.test("part 1, real input", () => {
+  const input = Deno.readTextFileSync("day4.input.txt");
 
   const bingo = impl.processBingo(input);
 
-  const winningBoard = bingo.play();
+  const winningBoard = bingo.playToFirstWin();
 
-  console.log(winningBoard)
+  console.log(winningBoard);
   console.log(winningBoard!.sumUnmarked() * bingo.currentNumber());
-})
+});
+
+Deno.test("part 2, test", () => {
+  const bingo = impl.processBingo(exampleInput);
+
+  const winningBoard = bingo.playToLastWin();
+
+  console.log(winningBoard);
+
+  assertEquals(winningBoard!.sumUnmarked() * bingo.currentNumber(), 1924);
+});
+
+Deno.test("part 2, real input", () => {
+  const input = Deno.readTextFileSync("day4.input.txt");
+
+  const bingo = impl.processBingo(input);
+
+  const winningBoard = bingo.playToLastWin();
+
+  console.log(winningBoard);
+  console.log(winningBoard!.sumUnmarked() * bingo.currentNumber());
+});
