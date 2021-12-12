@@ -1,3 +1,5 @@
+import { parseTen } from "./utils.ts";
+
 /*
     0:      1:      2:      3:      4:
    aaaa    ....    aaaa    aaaa    ....
@@ -86,6 +88,13 @@ function lettersInEvery(letterLists: string[]) {
   return LETTERS.filter((l) => letterLists.every((list) => list.includes(l)));
 }
 
+function reconstructNumber(wires: string, mapping: { [key: string]: string }) {
+  const correctWires = wires.split("").map((w) => mapping[w] as string).sort()
+    .join("") as keyof typeof NORMAL_MAPPINGS;
+
+  return NORMAL_MAPPINGS[correctWires];
+}
+
 export function parseReading(
   { combos, message }: { combos: string[]; message: string[] },
 ) {
@@ -139,14 +148,18 @@ export function parseReading(
   );
 
   const wireMappings = {
-    a: aWire,
-    b: bWire,
-    c: cWire,
-    d: dWire,
-    e: eWire,
-    f: fWire,
-    g: gWire,
+    [aWire]: "a",
+    [bWire]: "b",
+    [cWire]: "c",
+    [dWire]: "d",
+    [eWire]: "e",
+    [fWire]: "f",
+    [gWire]: "g",
   };
 
-  return { wireMappings, outputValue: 5353 };
+  const outputValue = parseTen(
+    message.map((m) => reconstructNumber(m, wireMappings)).join(""),
+  );
+
+  return { wireMappings, outputValue };
 }

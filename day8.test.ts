@@ -17,12 +17,6 @@ egadfb cdbfeg cegd fecab cgb gbdefca cg fgcdab egfdb bfceg | gbdfcae bgc cg cgb
 gcafb gcf dcaebfg ecagb gf abcdeg gaef cafbge fdbac fegbdc | fgae cfgab fg bagce
 `;
 
-Deno.test("part 1, setup", () => {
-  const messageNotes = impl.parseInput(exampleInput);
-
-  // console.log(messageNotes)
-});
-
 Deno.test("part 1, example input", () => {
   const readings = impl.parseInput(exampleInput);
 
@@ -43,13 +37,13 @@ Deno.test("part 2, one line example input", () => {
   const { wireMappings, outputValue } = impl.parseReading(readings[0]);
 
   assertEquals(wireMappings, {
-    a: "d",
-    b: "e",
-    c: "a",
-    d: "f",
-    e: "g",
-    f: "b",
-    g: "c",
+    d: "a",
+    e: "b",
+    a: "c",
+    f: "d",
+    g: "e",
+    b: "f",
+    c: "g",
   });
 
   assertEquals(outputValue, 5353);
@@ -58,18 +52,28 @@ Deno.test("part 2, one line example input", () => {
 Deno.test("part 2, full example input", () => {
   const readings = impl.parseInput(exampleInput);
 
-  // const outputs = readings.map(r => impl.parseReading(r).outputValue);
+  const outputs = readings.map((r) => impl.parseReading(r).outputValue);
 
-  // assertEquals(outputs, [
-  //   8394,
-  //   9781,
-  //   1197,
-  //   9361,
-  //   4873,
-  //   8418,
-  //   4548,
-  //   1625,
-  //   8717,
-  //   4315,
-  // ]);
+  assertEquals(outputs, [
+    8394,
+    9781,
+    1197,
+    9361,
+    4873,
+    8418,
+    4548,
+    1625,
+    8717,
+    4315,
+  ]);
+});
+
+Deno.test("part 2, real input", () => {
+  const input = Deno.readTextFileSync("./day8.input.txt");
+
+  const readings = impl.parseInput(input);
+
+  const outputs = readings.map((r) => impl.parseReading(r).outputValue);
+
+  console.log(outputs.reduce((a, b) => a + b));
 });
