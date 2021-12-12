@@ -1,6 +1,9 @@
 import { assertEquals } from "https://deno.land/std@0.117.0/testing/asserts.ts";
 import * as impl from "./day8.ts";
 
+const oneLineExample =
+  `acedgfb cdfbe gcdfa fbcad dab cefabd cdfgeb eafb cagedb ab | cdfeb fcadb cdfeb cdbaf`;
+
 const exampleInput = `
 be cfbegad cbdgef fgaecd cgeb fdcge agebfd fecdb fabcd edb | fdgacbe cefdb cefbgd gcbe
 edbfga begcd cbg gc gcadebf fbgde acbgfd abcde gfcbed gfec | fcgedb cgb dgebacf gc
@@ -31,5 +34,42 @@ Deno.test("part 1, real input", () => {
 
   const readings = impl.parseInput(input);
 
-  console.log(impl.countEasyNumbers(readings))
+  console.log(impl.countEasyNumbers(readings));
+});
+
+Deno.test("part 2, one line example input", () => {
+  const readings = impl.parseInput(oneLineExample);
+
+  const { wireMappings, outputValue } = impl.parseReading(readings[0]);
+
+  assertEquals(wireMappings, {
+    a: "d",
+    b: "e",
+    c: "a",
+    d: "f",
+    e: "g",
+    f: "b",
+    g: "c",
+  });
+
+  assertEquals(outputValue, 5353);
+});
+
+Deno.test("part 2, full example input", () => {
+  const readings = impl.parseInput(exampleInput);
+
+  // const outputs = readings.map(r => impl.parseReading(r).outputValue);
+
+  // assertEquals(outputs, [
+  //   8394,
+  //   9781,
+  //   1197,
+  //   9361,
+  //   4873,
+  //   8418,
+  //   4548,
+  //   1625,
+  //   8717,
+  //   4315,
+  // ]);
 });
