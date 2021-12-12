@@ -14,8 +14,7 @@ Deno.test("part 1, setup", () => {
 Deno.test("part 1, example input", () => {
   const crabs = impl.parseInput(exampleInput);
 
-  const column = impl.getBestColumn(crabs);
-  const fuel = impl.calculateFuelTo(column, crabs);
+  const { column, fuel } = impl.getBestColumn(crabs);
 
   assertEquals(column, 2);
   assertEquals(fuel, 37);
@@ -26,8 +25,7 @@ Deno.test("part 1, real input", () => {
 
   const crabs = impl.parseInput(input);
 
-  const column = impl.getBestColumn(crabs);
-  const fuel = impl.calculateFuelTo(column, crabs);
+  const { fuel } = impl.getBestColumn(crabs);
 
   console.log(fuel);
 });
@@ -35,19 +33,17 @@ Deno.test("part 1, real input", () => {
 Deno.test("part 2, setup", () => {
   const crabs = impl.parseInput(exampleInput);
 
-  assertEquals(impl.calculateFuelTo(1, crabs), 41);
-  assertEquals(impl.calculateFuelTo(3, crabs), 39);
-  assertEquals(impl.calculateFuelTo(10, crabs), 71);
+  assertEquals(impl.calculateFuelToPart2(2, crabs), 206);
+  assertEquals(impl.calculateFuelToPart2(5, crabs), 168);
 });
 
 Deno.test("part 2, example input", () => {
   const crabs = impl.parseInput(exampleInput);
 
-  const column = impl.getBestColumn(crabs);
-  const fuel = impl.calculateFuelTo(column, crabs);
+  const { column, fuel } = impl.getBestColumnPartTwo(crabs);
 
-  assertEquals(column, 2);
-  assertEquals(fuel, 37);
+  assertEquals(column, 5);
+  assertEquals(fuel, 168);
 });
 
 Deno.test("part 2, real input", () => {
@@ -55,8 +51,7 @@ Deno.test("part 2, real input", () => {
 
   const crabs = impl.parseInput(input);
 
-  const column = impl.getBestColumn(crabs);
-  const fuel = impl.calculateFuelTo(column, crabs);
+  const { fuel } = impl.getBestColumnPartTwo(crabs);
 
   console.log(fuel);
 });
