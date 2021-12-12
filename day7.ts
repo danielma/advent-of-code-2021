@@ -4,48 +4,54 @@ export function parseInput(rawInput: string) {
   return rawInput.split(",").map(parseTen);
 }
 
-type FuelRequired = (distance: number) => number
+type FuelRequired = (distance: number) => number;
 
 function getBestColumn(locations: number[], fuelRequired: FuelRequired) {
   const maxColumn = Math.max(...locations);
 
-  const allFuels = new Array(maxColumn - 1).fill(null).map((_, column) =>
-    calculateFuelTo(column, locations, fuelRequired)
-  );
+  let bestFuel = Infinity;
+  let bestColumn = -1;
 
-  const bestFuel = Math.min(...allFuels);
-  const bestColumn = allFuels.indexOf(bestFuel);
+  for (let i = 0; i < maxColumn; i++) {
+    const fuel = calculateFuelTo(i, locations, fuelRequired);
+
+    if (fuel < bestFuel) {
+      bestFuel = fuel;
+      bestColumn = i;
+    }
+  }
 
   return { column: bestColumn, fuel: bestFuel };
 }
 
 export function getBestConstantColumn(locations: number[]) {
-  return getBestColumn(locations, x => x)
+  return getBestColumn(locations, (x) => x);
 }
 
-export function getBestFactorialColumn(locations: number[]) {
-  return getBestColumn(locations, factorial);
+export function getBestNthTriangleColumn(locations: number[]) {
+  return getBestColumn(locations, nthTriangle);
 }
 
-function factorial(n: number): number {
-  if (n === 0) return 0;
-  else {
-    return n + factorial(n - 1);
-  }
+// https://math.stackexchange.com/a/593320
+function nthTriangle(n: number): number {
+  return ((n ** 2) + n) / 2
 }
 
-function calculateFuelTo(column: number, locations: number[], fuelRequired: (n: number) => number) {
-
+function calculateFuelTo(
+  column: number,
+  locations: number[],
+  fuelRequired: (n: number) => number,
+) {
   return locations.reduce(
     (total, location) => total + fuelRequired(Math.abs(location - column)),
     0,
   );
 }
 
-export function calculateFactorialFuelTo(column: number, locations: number[]) {
-  return calculateFuelTo(column, locations, factorial)
+export function calculateNthTriangleFuelTo(column: number, locations: number[]) {
+  return calculateFuelTo(column, locations, nthTriangle);
 }
 
 export function calculateConstantFuelTo(column: number, locations: number[]) {
-  return calculateFuelTo(column, locations, (x) => x)
+  return calculateFuelTo(column, locations, (x) => x);
 }

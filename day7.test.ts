@@ -33,14 +33,14 @@ Deno.test("part 1, real input", () => {
 Deno.test("part 2, setup", () => {
   const crabs = impl.parseInput(exampleInput);
 
-  assertEquals(impl.calculateFactorialFuelTo(2, crabs), 206);
-  assertEquals(impl.calculateFactorialFuelTo(5, crabs), 168);
+  assertEquals(impl.calculateNthTriangleFuelTo(2, crabs), 206);
+  assertEquals(impl.calculateNthTriangleFuelTo(5, crabs), 168);
 });
 
 Deno.test("part 2, example input", () => {
   const crabs = impl.parseInput(exampleInput);
 
-  const { column, fuel } = impl.getBestFactorialColumn(crabs);
+  const { column, fuel } = impl.getBestNthTriangleColumn(crabs);
 
   assertEquals(column, 5);
   assertEquals(fuel, 168);
@@ -51,7 +51,7 @@ Deno.test("part 2, real input", () => {
 
   const crabs = impl.parseInput(input);
 
-  const { fuel } = impl.getBestFactorialColumn(crabs);
+  const { fuel } = impl.getBestNthTriangleColumn(crabs);
 
   console.log(fuel);
 });
