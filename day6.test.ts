@@ -5,19 +5,21 @@ const exampleInput = `3,4,3,1,2`
 
 function assertStep(sim: impl.FishSimulation, fishCycles: number[]) {
   sim.step()
-  console.log(sim.fish)
-  assertEquals(sim.fish.map(f => f.cycle), fishCycles)
+  // console.log(sim.fish)
+  assertEquals(sim.fish, fishCycles)
 }
 
 Deno.test("parsing inputs", () => {
   const lanternFish = impl.parseFish(exampleInput);
   const sim = new impl.FishSimulation(lanternFish)
 
-  assertEquals(sim.fish.map(f => f.cycle), [3,4,3,1,2])
+  assertEquals(sim.fish, [3,4,3,1,2])
+
+  assertStep(sim, [2,3,2,0,1])
+  assertStep(sim, [1,2,1,6,0,8])
 })
 
 Deno.test("part 1, example input", () => {
-  // my fish flat map and insert next to themselves
   const lanternFish = impl.parseFish(exampleInput);
   const sim = new impl.FishSimulation(lanternFish)
 
@@ -46,4 +48,15 @@ Deno.test("part 1, realInput", () => {
   }
 
   console.log(sim.fish.length)
+});
+
+Deno.test("part 2, example", () => {
+  const fish = impl.parseFish(exampleInput)
+  const sim = new impl.FishSimulation(fish)
+  
+  for (let i = 0; i < 256; i++) {
+    sim.step()
+  }
+
+  assertEquals(sim.fish.length, 26984457539)
 });
