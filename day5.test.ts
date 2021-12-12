@@ -17,15 +17,20 @@ const exampleInput = `
 Deno.test("parsing inputs", () => {
   const seaFloor = impl.processSeaFloor(exampleInput);
 
-
   // i broke these because the arrays are partially empty now
 
-  // assertEquals(seaFloor.matrix[0], [0, 0, 0, 0, 0, 0, 0, 1, 0, 0]);
+  assertEquals(seaFloor.matrix[0][7], 1);
+  assertEquals(seaFloor.matrix[0][0], undefined);
+
   // assertEquals(seaFloor.matrix[1], [0, 0, 1, 0, 0, 0, 0, 1, 0, 0]);
+  assertEquals(seaFloor.matrix[1][2], 1);
+  assertEquals(seaFloor.matrix[1][0], undefined);
 });
 
 Deno.test("part 1", () => {
   const seaFloor = impl.processSeaFloor(exampleInput);
+
+  // console.log(seaFloor)
 
   assertEquals(seaFloor.spotsWithMinDanger(2).length, 5);
 });
@@ -35,26 +40,21 @@ Deno.test("part 1, real input", () => {
 
   const seaFloor = impl.processSeaFloor(input);
 
-  console.log(seaFloor.spotsWithMinDanger(2).length)
+  console.log(seaFloor.spotsWithMinDanger(2).length);
 });
 
-// Deno.test("part 2, test", () => {
-//   const bingo = impl.processBingo(exampleInput);
+Deno.test("part 2", () => {
+  const seaFloor = impl.processSeaFloorWithDiagonals(exampleInput);
 
-//   const winningBoard = bingo.playToLastWin();
+  // console.log(seaFloor);
 
-//   console.log(winningBoard);
+  assertEquals(seaFloor.spotsWithMinDanger(2).length, 12);
+});
 
-//   assertEquals(winningBoard!.sumUnmarked() * bingo.currentNumber(), 1924);
-// });
+Deno.test("part 2, realInput", () => {
+  const input = Deno.readTextFileSync("day5.input.txt");
 
-// Deno.test("part 2, real input", () => {
-//   const input = Deno.readTextFileSync("day4.input.txt");
+  const seaFloor = impl.processSeaFloorWithDiagonals(input);
 
-//   const bingo = impl.processBingo(input);
-
-//   const winningBoard = bingo.playToLastWin();
-
-//   console.log(winningBoard);
-//   console.log(winningBoard!.sumUnmarked() * bingo.currentNumber());
-// });
+  console.log(seaFloor.spotsWithMinDanger(2).length);
+});

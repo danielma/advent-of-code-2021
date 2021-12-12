@@ -6,6 +6,18 @@ const Point = {
     return { x: parseTen(start), y: parseTen(end) };
   },
 
+  min(a: Point, b: Point) {
+    return Point.sort(a, b)[0];
+  },
+
+  sort(a: Point, b: Point) {
+    if (a.x === b.x) {
+      return a.y < b.y ? [a, b] : [b, a];
+    } else {
+      return a.x < b.x ? [a, b] : [b, a];
+    }
+  },
+
   equal(a: Point, b: Point) {
     return a.x === b.x && a.y === b.y;
   },
@@ -14,6 +26,16 @@ const Point = {
     return self.findIndex((o) => Point.equal(value, o)) === index;
   },
 };
+
+function moveTowards(a: number, b: number, steps: number) {
+  if (a === b) {
+    return a;
+  } else if (a < b) {
+    return a + steps;
+  } else {
+    return a - steps;
+  }
+}
 
 function parseTen(x: string) {
   return parseInt(x, 10);
@@ -44,33 +66,35 @@ class DrawCommand {
   }
 
   private genPoints(): Point[] {
-    const minX = Math.min(this.startPoint.x, this.endPoint.x);
-    const maxX = Math.max(this.startPoint.x, this.endPoint.x);
-    const minY = Math.min(this.startPoint.y, this.endPoint.y);
-    const maxY = Math.max(this.startPoint.y, this.endPoint.y);
+    const [minPoint, maxPoint] = Point.sort(this.startPoint, this.endPoint);
 
     const points = [];
 
-    for (let i = minX; i <= maxX; i++) {
-      points.push({ x: i, y: minY });
+    const steps = (maxPoint.x - minPoint.x) || (maxPoint.y - minPoint.y);
+
+    for (let i = 0; i < steps + 1; i++) {
+      const x = moveTowards(minPoint.x, maxPoint.x, i);
+      const y = moveTowards(minPoint.y, maxPoint.y, i);
+      points.push({ x, y });
     }
 
-    for (let i = minY; i <= maxY; i++) {
-      points.push({ x: maxX, y: i });
-    }
-
-    return points.filter(Point.onlyUnique);
+    return points;
   }
 }
 
 class SeaFloor {
   matrix: number[][] = [];
 
-  static from(commands: DrawCommand[]) {
+  static from(
+    commands: DrawCommand[],
+    { ignoreDiagonals }: { ignoreDiagonals: boolean } = {
+      ignoreDiagonals: false,
+    },
+  ) {
     const floor = new SeaFloor();
 
     commands.forEach((command) => {
-      if (!command.isStraight()) return;
+      if (ignoreDiagonals && !command.isStraight()) return;
 
       command.eachPoint((p) => {
         floor.incrementPoint(p);
@@ -98,6 +122,14 @@ class SeaFloor {
 }
 
 export function processSeaFloor(input: string) {
+  const commands = input.trim().split("\n").map(DrawCommand.parse);
+
+  const floor = SeaFloor.from(commands, { ignoreDiagonals: true });
+
+  return floor;
+}
+
+export function processSeaFloorWithDiagonals(input: string) {
   const commands = input.trim().split("\n").map(DrawCommand.parse);
 
   const floor = SeaFloor.from(commands);
