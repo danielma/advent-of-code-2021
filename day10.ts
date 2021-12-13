@@ -11,19 +11,34 @@ const OpenerChars: string[] = Object.keys(Opener).map((k) =>
   Opener[k as keyof typeof Opener]
 );
 
+type CloserChar = keyof typeof CorruptionScores;
+type OpenerChar = "(" | "[" | "{" | "<";
+
 const OpenerMap = {
-  "(": ")",
-  "[": "]",
-  "{": "}",
-  "<": ">",
+  "(": ")" as CloserChar,
+  "[": "]" as CloserChar,
+  "{": "}" as CloserChar,
+  "<": ">" as CloserChar,
 };
 
-// const CLOSERS = ")]}>".split("");
+const CorruptionScores = {
+  ")": 3,
+  "]": 57,
+  "}": 1197,
+  ">": 25137,
+};
+
+const AutoCompleteScores = {
+  ")": 1,
+  "]": 2,
+  "}": 3,
+  ">": 4,
+};
 
 type SyntaxLine = {
   source: string;
-  incomplete: boolean;
-  corruptedCharacters: CorruptCharacter[];
+  incompleteCharacters: OpenerChar[];
+  corruptedCharacters: CloserChar[];
 };
 
 type SyntaxWalker = {
@@ -48,7 +63,7 @@ const SyntaxLine = {
   parse(raw: string): SyntaxLine {
     return SyntaxLine.walk({
       source: raw,
-      incomplete: false,
+      incompleteCharacters: [],
       corruptedCharacters: [],
     });
   },
@@ -59,10 +74,8 @@ const SyntaxLine = {
 
     if (line.corruptedCharacters.length > 0) {
       return line;
-    } else if (walker.openPairs.length > 0) {
-      return { ...line, incomplete: true };
     } else {
-      return line;
+      return { ...line, incompleteCharacters: walker.openPairs };
     }
   },
 
@@ -85,7 +98,10 @@ const SyntaxLine = {
         pointer: pointer + 1,
       });
     } else {
-      return { ...walker, line: { ...line, corruptedCharacters: [char as CorruptCharacter] } };
+      return {
+        ...walker,
+        line: { ...line, corruptedCharacters: [char as CloserChar] },
+      };
     }
   },
 
@@ -116,15 +132,28 @@ export function parseInput(rawInput: string) {
   return rawInput.trim().split("\n").map(SyntaxLine.parse);
 }
 
-type CorruptCharacter = keyof typeof CorruptionScores
-
-const CorruptionScores = {
-  ")": 3,
-  "]": 57,
-  "}": 1197,
-  ">": 25137,
-};
-
-export function scoreCorruption(characters: CorruptCharacter[]) {
+export function scoreCorruption(characters: CloserChar[]) {
   return characters.map((c) => CorruptionScores[c]).reduce(add);
+}
+
+export function autoCompleteFor(line: SyntaxLine): CloserChar[] {
+  return line.incompleteCharacters.reverse().map((c) => OpenerMap[c]);
+}
+
+export function scoreAutoComplete(autoComplete: CloserChar[]) {
+  let score = 0;
+
+  autoComplete.forEach((char) => {
+    score = score * 5;
+
+    score += AutoCompleteScores[char];
+  });
+
+  return score;
+}
+
+export function autoCompleteWinner(scores: number[]) {
+  const sortedScores = [...scores].sort((a, b) => a - b);
+
+  return sortedScores[(sortedScores.length - 1) / 2];
 }
