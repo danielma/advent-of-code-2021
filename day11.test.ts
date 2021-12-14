@@ -224,5 +224,29 @@ Deno.test("part 1, real input", () => {
   const sim = new impl.OctopiSimulator(octopi);
 
   sim.simulate(100);
-  console.log(sim.totalFlashes)
+  console.log(sim.totalFlashes);
+});
+
+Deno.test("part 2, example input", () => {
+  const octopi = impl.parseInput(exampleInput);
+  const sim = new impl.OctopiSimulator(octopi);
+
+  do {
+    sim.step();
+  } while (!sim.isFullFlash());
+
+  assertEquals(sim.isFullFlash(), true);
+  assertEquals(sim.steps, 195);
+});
+
+Deno.test("part 2, real input", () => {
+  const input = Deno.readTextFileSync("./day11.input.txt");
+  const octopi = impl.parseInput(input);
+  const sim = new impl.OctopiSimulator(octopi);
+
+  do {
+    sim.step();
+  } while (!sim.isFullFlash());
+
+  console.log(sim.steps);
 });

@@ -7,7 +7,8 @@ export function parseInput(rawInput: string) {
 
 export class OctopiSimulator {
   matrix: Readings;
-  totalFlashes = 0
+  totalFlashes = 0;
+  steps = 0;
 
   constructor(matrix: Readings) {
     this.matrix = matrix;
@@ -26,9 +27,11 @@ export class OctopiSimulator {
       const value = this.valueAt(p);
 
       if (value > 9) {
-        this.setValueAt(p, 0)
+        this.setValueAt(p, 0);
       }
     });
+
+    this.steps++;
   }
 
   incrementPoint(point: Point) {
@@ -38,12 +41,12 @@ export class OctopiSimulator {
     this.setValueAt(point, nextValue);
 
     if (nextValue === 10) {
-      this.flashPoint(point)
+      this.flashPoint(point);
     }
   }
 
   flashPoint(point: Point) {
-    this.totalFlashes++
+    this.totalFlashes++;
     this.adjacentPoints(point).forEach((p) => this.incrementPoint(p));
   }
 
@@ -67,5 +70,9 @@ export class OctopiSimulator {
         cb({ x, y });
       }
     }
+  }
+
+  isFullFlash() {
+    return this.matrix.every((row) => row.every((v) => v === 0));
   }
 }
