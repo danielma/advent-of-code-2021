@@ -1,11 +1,11 @@
-import { hasProperty, isUpcase } from "./utils.ts";
+import { hasProperty } from "./utils.ts";
 
 export type Path = {
   locations: string[];
   lastLocation: string;
 
   visitCounts: Record<string, number>;
-  alreadyDidDoubleMinorVisit: boolean;
+  canStillDoubleVisitMinor: boolean;
 };
 
 const Path = {
@@ -18,33 +18,35 @@ const Path = {
       locations: [],
       visitCounts: {},
       lastLocation: "",
-      alreadyDidDoubleMinorVisit: false,
+      canStillDoubleVisitMinor: true,
     };
-  },
-
-  from(locations: string[]): Path {
-    return locations.reduce(
-      (memo, location) => Path.visit(memo, location),
-      Path.empty(),
-    );
   },
 
   visit(path: Path, location: string): Path {
     const visitCounts = path.visitCounts[location] || 0;
-    const alreadyDidDoubleMinorVisit = (location === location.toLowerCase()) &&
-      visitCounts === 1;
+    let canStillDoubleVisitMinor = path.canStillDoubleVisitMinor
+
+    if (canStillDoubleVisitMinor && location === location.toLowerCase()) {
+      canStillDoubleVisitMinor = visitCounts < 1
+    }
+
     return {
       locations: path.locations.concat([location]),
       visitCounts: { ...path.visitCounts, [location]: visitCounts + 1 },
       lastLocation: location,
-      alreadyDidDoubleMinorVisit,
+      canStillDoubleVisitMinor,
     };
   },
 
   canVisit(path: Path, location: string) {
-    if (location === "start") return false;
-
-    return isUpcase(location) || !path.visitCounts[location];
+    switch (location) {
+      case "start":
+        return false;
+      case location.toUpperCase():
+        return true;
+      default:
+        return !path.visitCounts[location];
+    }
   },
 
   canVisitWithOneMinorDouble(path: Path, location: string) {
@@ -60,7 +62,7 @@ const Path = {
 
   canVisitMinorLocation(path: Path, minorLocation: string) {
     if (hasProperty(path.visitCounts, minorLocation)) {
-      return !path.alreadyDidDoubleMinorVisit;
+      return path.canStillDoubleVisitMinor;
     } else {
       return true;
     }
@@ -116,7 +118,7 @@ export class Caves {
     );
 
     return possibleLocations.flatMap((l) =>
-      this.paths(Path.visit(fromPath, l))
+      this.pathsWithOneMinorDouble(Path.visit(fromPath, l))
     );
   }
 }

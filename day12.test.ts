@@ -81,7 +81,7 @@ start,kj,dc,end`,
   );
 });
 
-Deno.test('part 1, final example', () => {
+Deno.test("part 1, final example", () => {
   const exampleInput = `
 fs-end
 he-DX
@@ -100,19 +100,19 @@ start-pj
 he-WI
 zg-he
 pj-fs
-start-RW`
+start-RW`;
 
-  const cave = impl.Caves.from(impl.parseInput(exampleInput))
-  const paths = cave.paths()
+  const cave = impl.Caves.from(impl.parseInput(exampleInput));
+  const paths = cave.paths();
 
-  assertEquals(paths.length, 226)
-})
+  assertEquals(paths.length, 226);
+});
 
 Deno.test("part 1, real input", () => {
   const input = Deno.readTextFileSync("./day12.input.txt");
-  const cave = impl.Caves.from(impl.parseInput(input))
+  const cave = impl.Caves.from(impl.parseInput(input));
 
-  console.log(cave.paths().length)
+  console.log(cave.paths().length);
 });
 
 Deno.test("part 2, minimal input", () => {
@@ -130,7 +130,7 @@ b-end
 
   const paths = caves.pathsWithOneMinorDouble();
 
-  console.log(paths)
+  // console.log(paths);
 
   assertPaths(
     paths,
@@ -188,33 +188,12 @@ kj-dc
 `;
 
   const caves = impl.Caves.from(impl.parseInput(exampleInput));
-  const paths = caves.paths();
+  const paths = caves.pathsWithOneMinorDouble();
 
-  assertPaths(
-    paths,
-    `start,HN,dc,HN,end
-start,HN,dc,HN,kj,HN,end
-start,HN,dc,end
-start,HN,dc,kj,HN,end
-start,HN,end
-start,HN,kj,HN,dc,HN,end
-start,HN,kj,HN,dc,end
-start,HN,kj,HN,end
-start,HN,kj,dc,HN,end
-start,HN,kj,dc,end
-start,dc,HN,end
-start,dc,HN,kj,HN,end
-start,dc,end
-start,dc,kj,HN,end
-start,kj,HN,dc,HN,end
-start,kj,HN,dc,end
-start,kj,HN,end
-start,kj,dc,HN,end
-start,kj,dc,end`,
-  );
+  assertEquals(paths.length, 103)
 });
 
-Deno.test('part 2, final example', () => {
+Deno.test("part 2, final example", () => {
   const exampleInput = `
 fs-end
 he-DX
@@ -233,17 +212,17 @@ start-pj
 he-WI
 zg-he
 pj-fs
-start-RW`
+start-RW`;
 
-  const cave = impl.Caves.from(impl.parseInput(exampleInput))
-  const paths = cave.paths()
+  const cave = impl.Caves.from(impl.parseInput(exampleInput));
+  const paths = cave.pathsWithOneMinorDouble();
 
-  assertEquals(paths.length, 226)
-})
+  assertEquals(paths.length, 3509);
+});
 
 Deno.test("part 2, real input", () => {
   const input = Deno.readTextFileSync("./day12.input.txt");
-  const cave = impl.Caves.from(impl.parseInput(input))
+  const cave = impl.Caves.from(impl.parseInput(input));
 
-  console.log(cave.paths().length)
+  console.log(cave.pathsWithOneMinorDouble().length);
 });
