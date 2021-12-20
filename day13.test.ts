@@ -95,3 +95,15 @@ Deno.test("part 1, real input", () => {
 
   console.log(oneFold.length);
 });
+
+Deno.test('part 2, real input', () => {
+  const input = Deno.readTextFileSync("./day13.input.txt");
+  const { dots, foldInstructions } = impl.parseInput(input);
+
+  const initialGrid = impl.Grid.from(dots)
+
+  const out = foldInstructions.reduce(impl.Grid.fold, initialGrid)
+
+  console.log('')
+  console.log(impl.Matrix.toString(impl.Grid.toMatrix(out)))
+})
