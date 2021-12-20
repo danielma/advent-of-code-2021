@@ -1,3 +1,5 @@
+import { parseTen } from "../utils.ts";
+
 export type Readings = number[][];
 export type Point = { x: number; y: number };
 
@@ -16,9 +18,7 @@ export const Readings = {
       height: Readings.height(readings),
     };
   },
-
-  
-}
+};
 
 export const Point = {
   north(point: Point) {
@@ -40,20 +40,28 @@ export const Point = {
   adjacentPoints(point: Point, readings: Readings, countDiagonals = false) {
     const { width, height } = Readings.size(readings);
 
-    const northPoint = Point.north(point)
-    const southPoint = Point.south(point)
+    const northPoint = Point.north(point);
+    const southPoint = Point.south(point);
 
     const points = [
-      northPoint, southPoint,
+      northPoint,
+      southPoint,
       Point.east(point),
       Point.west(point),
-    ]
+    ];
 
     if (countDiagonals) {
-      points.push(Point.west(northPoint), Point.east(northPoint), Point.west(southPoint), Point.east(southPoint))
+      points.push(
+        Point.west(northPoint),
+        Point.east(northPoint),
+        Point.west(southPoint),
+        Point.east(southPoint),
+      );
     }
 
-    return points.filter((p) => p.x >= 0 && p.x < width && p.y >= 0 && p.y < height);
+    return points.filter((p) =>
+      p.x >= 0 && p.x < width && p.y >= 0 && p.y < height
+    );
   },
 
   value(point: Point, readings: Readings) {
@@ -66,5 +74,10 @@ export const Point = {
 
   unique(point: Point, index: number, source: Point[]) {
     return index === source.findIndex((p) => Point.equal(p, point));
+  },
+
+  parse(input: string): Point {
+    const [x, y] = input.split(",").map(parseTen);
+    return { x, y };
   },
 };
