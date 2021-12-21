@@ -1,41 +1,46 @@
 import { hasProperty } from "./utils.ts";
 
-type Polymer = string[];
+type Polymer = string;
 type Instructions = Record<string, string>;
 
 export const Polymer = {
   applyInstructions(polymer: Polymer, instructions: Instructions): Polymer {
-    return polymer.flatMap((value, index, source) => {
-      if (index === (source.length - 1)) return value;
+    let out = polymer;
+    for (let index = 0; index < (out.length - 1); index += 2) {
+      const char = out[index];
 
-      const pair = `${value}${source[index + 1]}`;
-
+      const pair = `${char}${out[index + 1]}`;
       const insertion = instructions[pair];
 
       if (insertion) {
-        return [value, insertion];
+        out = out.slice(0, index + 1) + insertion + out.slice(index + 1);
       } else {
         throw new Error(`Expected instruction for pair ${pair}`);
       }
-    });
+    }
+
+    return out;
   },
 };
 
 export const List = {
-  count(list: string[]) {
+  count(list: Polymer) {
     const out: Record<string, number> = {};
-    return list.reduce((memo, item) => {
-      if (!hasProperty(memo, item)) {
-        memo[item] = 0;
+
+    for (let i = 0; i < list.length; i++) {
+      const item = list[i];
+
+      if (!hasProperty(out, item)) {
+        out[item] = 0;
       }
 
-      memo[item]++;
+      out[item]++;
+    }
 
-      return memo;
-    }, out);
+    return out;
   },
 
-  sortByMostCommon(list: string[]) {
+  sortByMostCommon(list: Polymer) {
     const counts = List.count(list);
 
     return Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
@@ -46,7 +51,7 @@ export function parseInput(
   input: string,
 ): { polymer: Polymer; instructions: Instructions } {
   const [rawPolymer, rawInstructions] = input.trim().split("\n\n");
-  const polymer = rawPolymer.split("");
+  const polymer = rawPolymer;
 
   const out: Record<string, string> = {};
   const instructions = rawInstructions.split("\n").map((
