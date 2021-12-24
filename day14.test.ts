@@ -34,20 +34,32 @@ Deno.test("part 1, basic application", () => {
   const oneStep = impl.Polymer.applyInstructions(polymer, instructions);
 
   assertEquals(impl.Polymer.join(oneStep), "NCNBCHB");
+  assertEquals(impl.Polymer.applyToCounts(polymer, instructions, 1), {
+    N: 2,
+    C: 2,
+    B: 2,
+    H: 1,
+  });
 
   const twoStep = impl.Polymer.applyInstructions(polymer, instructions, 2);
 
   assertEquals(impl.Polymer.join(twoStep), "NBCCNBBBCBHCB");
+  assertEquals(impl.Polymer.applyToCounts(polymer, instructions, 2), {
+    N: 2,
+    C: 4,
+    B: 6,
+    H: 1,
+  });
 });
 
 Deno.test("part 1, example input", () => {
   const { polymer, instructions } = impl.parseInput(exampleInput);
 
-  const tenStep = impl.Polymer.applyInstructions(polymer, instructions, 10)
+  const tenStep = impl.Polymer.applyInstructions(polymer, instructions, 10);
 
   assertEquals(impl.Polymer.join(tenStep).length, 3073);
 
-  const counts = impl.Polymer.countOccurrences(tenStep);
+  const counts = impl.Polymer.applyToCounts(polymer, instructions, 10);
   const commonality = impl.List.sortByMostCommon(counts);
 
   assertEquals(commonality[0], "B");
@@ -62,9 +74,9 @@ Deno.test("part 1, real input", () => {
   const input = Deno.readTextFileSync("./day14.input.txt");
   const { polymer, instructions } = impl.parseInput(input);
 
-  const tenStep = impl.Polymer.applyInstructions(polymer, instructions, 10)
+  const tenStep = impl.Polymer.applyInstructions(polymer, instructions, 10);
 
-  const counts = impl.Polymer.countOccurrences(tenStep);
+  const counts = impl.Polymer.applyToCounts(polymer, instructions, 10);
   const commonality = impl.List.sortByMostCommon(counts);
 
   const mostCommon = commonality[0];
@@ -73,25 +85,17 @@ Deno.test("part 1, real input", () => {
   console.log(counts[mostCommon] - counts[leastCommon]);
 });
 
-// Deno.test("part 2, example input", () => {
-//   const { polymer, instructions } = impl.parseInput(exampleInput);
+Deno.test("part 2, example input", () => {
+  const { polymer, instructions } = impl.parseInput(exampleInput);
 
-//   const fortyStep = new Array(40).fill(null).reduce(
-//     (p, _, step) => {
-//       console.log(`starting step ${step}. ${p.length} long`);
-//       return impl.Polymer.applyInstructions(p, instructions);
-//     },
-//     polymer,
-//   );
+  const counts = impl.Polymer.applyToCounts(polymer, instructions, 24);
+  const commonality = impl.List.sortByMostCommon(counts);
 
-//   const counts = impl.List.count(fortyStep);
-//   const commonality = impl.List.sortByMostCommon(fortyStep);
+  const mostCommon = commonality[0];
+  const leastCommon = commonality[commonality.length - 1];
 
-//   const mostCommon = commonality[0];
-//   const leastCommon = commonality[commonality.length - 1];
-
-//   assertEquals(counts[mostCommon] - counts[leastCommon], 2188189693529);
-// });
+  assertEquals(counts[mostCommon] - counts[leastCommon], 2188189693529);
+});
 
 // Deno.test("part 2, real input", () => {
 //   const input = Deno.readTextFileSync("./day14.input.txt");

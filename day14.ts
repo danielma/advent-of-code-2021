@@ -27,6 +27,53 @@ export const Polymer = {
     });
   },
 
+  applyToCounts(
+    polymer: Polymer,
+    instructions: Instructions,
+    depth = 1,
+  ): LetterCounts {
+    const initialLetters = Polymer.join(polymer).split("");
+    const out: LetterCounts = {};
+
+    initialLetters.forEach((l) => {
+      if (!hasProperty(out, l)) {
+        out[l] = 0;
+      }
+
+      out[l]++;
+    });
+
+    const starterPairs = polymer.map((p) => p[0]);
+
+    starterPairs.forEach((p) => {
+      Polymer.innerApplyToCounts(p, instructions, out, depth);
+      console.log('done with 1', { out})
+    });
+
+    return out;
+  },
+
+  innerApplyToCounts(
+    pair: string,
+    instructions: Instructions,
+    out: LetterCounts,
+    depth: number,
+  ) {
+    const insertion = instructions[pair];
+
+    if (!hasProperty(out, insertion)) {
+      out[insertion] = 0;
+    }
+
+    out[insertion]++;
+
+    if (depth > 1) {
+      const [a, b] = pair;
+      Polymer.innerApplyToCounts(`${a}${insertion}`, instructions, out, depth - 1)
+      Polymer.innerApplyToCounts(`${insertion}${b}`, instructions, out, depth - 1)
+    }
+  },
+
   empty(...pairs: string[]): Polymer {
     return pairs.map((p) => [p, null]);
   },
@@ -56,7 +103,7 @@ export const Polymer = {
 
   innerCountOccurrences(
     polymer: Polymer,
-    out: LetterCounts
+    out: LetterCounts,
   ): LetterCounts {
     polymer.forEach(([pair, children]) => {
       if (children) {
