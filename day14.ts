@@ -1,49 +1,90 @@
 import { hasProperty } from "./utils.ts";
 
-type Polymer = string;
+type Polymer = [string, null | Polymer][];
 type Instructions = Record<string, string>;
+type LetterCounts = Record<string, number>;
 
 export const Polymer = {
-  applyInstructions(polymer: Polymer, instructions: Instructions): Polymer {
-    let out = polymer;
-    for (let index = 0; index < (out.length - 1); index += 2) {
-      const char = out[index];
+  applyInstructions(
+    polymer: Polymer,
+    instructions: Instructions,
+    depth = 1,
+  ): Polymer {
+    if (depth === 0) return polymer;
 
-      const pair = `${char}${out[index + 1]}`;
+    return polymer.map(([pair]) => {
       const insertion = instructions[pair];
+      const [a, b] = pair.split("");
 
-      if (insertion) {
-        out = out.slice(0, index + 1) + insertion + out.slice(index + 1);
+      return [
+        pair,
+        Polymer.applyInstructions(
+          Polymer.empty(`${a}${insertion}`, `${insertion}${b}`),
+          instructions,
+          depth - 1,
+        ),
+      ];
+    });
+  },
+
+  empty(...pairs: string[]): Polymer {
+    return pairs.map((p) => [p, null]);
+  },
+
+  join(polymer: Polymer): string {
+    return polymer[0][0][0] + Polymer.innerJoin(polymer);
+  },
+
+  innerJoin(polymer: Polymer): string {
+    return polymer.map(([pair, children]) => {
+      if (children) {
+        return Polymer.innerJoin(children);
       } else {
-        throw new Error(`Expected instruction for pair ${pair}`);
+        return pair[1];
       }
-    }
+    }).join("");
+  },
+
+  countOccurrences(polymer: Polymer): LetterCounts {
+    const out: LetterCounts = {};
+    const starterChar = polymer[0][0][0];
+
+    out[starterChar] = 1;
+
+    return Polymer.innerCountOccurrences(polymer, out);
+  },
+
+  innerCountOccurrences(
+    polymer: Polymer,
+    out: LetterCounts
+  ): LetterCounts {
+    polymer.forEach(([pair, children]) => {
+      if (children) {
+        return Polymer.innerCountOccurrences(children, out);
+      } else if (!hasProperty(out, pair[1])) {
+        out[pair[1]] = 0;
+      }
+
+      out[pair[1]]++;
+    });
 
     return out;
   },
 };
 
 export const List = {
-  count(list: Polymer) {
-    const out: Record<string, number> = {};
+  sortByMostCommon(counts: LetterCounts): string[] {
+    return Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
+  },
 
-    for (let i = 0; i < list.length; i++) {
-      const item = list[i];
+  chunk<T>(list: T[], chunkSize: number) {
+    const out = [];
 
-      if (!hasProperty(out, item)) {
-        out[item] = 0;
-      }
-
-      out[item]++;
+    for (let i = 0; i < (list.length - (chunkSize - 1)); i++) {
+      out.push(list.slice(i, i + chunkSize));
     }
 
     return out;
-  },
-
-  sortByMostCommon(list: Polymer) {
-    const counts = List.count(list);
-
-    return Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
   },
 };
 
@@ -51,16 +92,17 @@ export function parseInput(
   input: string,
 ): { polymer: Polymer; instructions: Instructions } {
   const [rawPolymer, rawInstructions] = input.trim().split("\n\n");
-  const polymer = rawPolymer;
+  const pairs = List.chunk(rawPolymer.split(""), 2).map((c) => c.join(""));
+  const polymer = Polymer.empty(...pairs);
 
-  const out: Record<string, string> = {};
+  const instructionsOut: Record<string, string> = {};
   const instructions = rawInstructions.split("\n").map((
     l,
   ) => l.split(" -> "))
     .reduce((memo, [pair, insertion]) => {
       memo[pair] = insertion;
       return memo;
-    }, out);
+    }, instructionsOut);
 
   return { polymer, instructions };
 }
