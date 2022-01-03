@@ -30,11 +30,11 @@ export const Point = {
   },
 
   east(point: Point) {
-    return { x: point.x - 1, y: point.y };
+    return { x: point.x + 1, y: point.y };
   },
 
   west(point: Point) {
-    return { x: point.x + 1, y: point.y };
+    return { x: point.x - 1, y: point.y };
   },
 
   adjacentPoints(point: Point, readings: Readings, countDiagonals = false) {
